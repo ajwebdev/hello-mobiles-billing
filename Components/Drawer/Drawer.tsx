@@ -1,8 +1,7 @@
 import React from "react";
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import DrawerToggler from "../Drawer/DrawerToggler";
 import DrawerContent from "../Drawer/DrawerContent";
-import HomeScreen from "../Screens/Home/HomeScreen";
+import Screens from "../Screens/StackScreen";
 
 const CustomDrawer = createDrawerNavigator();
 const Drawer = (props: any) => {
@@ -10,8 +9,11 @@ const Drawer = (props: any) => {
     <CustomDrawer.Navigator
       initialRouteName="dashboard"
       drawerContent={DrawerContent}
+      drawerType="slide"
     >
-      <CustomDrawer.Screen name="dashboard" component={HomeScreen} />
+      <CustomDrawer.Screen name="Screens">
+        {(props) => <Screens {...props} style={{ flex: 1 }} />}
+      </CustomDrawer.Screen>
     </CustomDrawer.Navigator>
   );
 };

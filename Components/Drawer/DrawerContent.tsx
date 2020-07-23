@@ -27,12 +27,12 @@ const DrawerContent = (props: any) => {
           <CustomDrawerItem
             ItemLabel="Add Accessories"
             ItemStyle={styles.label}
-            ItemEvent={() => CustomNavigation("dashboard")}
+            ItemEvent={() => CustomNavigation("accessories")}
           />
           <CustomDrawerItem
             ItemLabel="Add Items"
             ItemStyle={styles.label}
-            ItemEvent={() => CustomNavigation("dashboard")}
+            ItemEvent={() => CustomNavigation("additem")}
           />
           <CustomDrawerItem
             ItemLabel="Products"
