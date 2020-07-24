@@ -13,6 +13,6 @@ const AppHeader = (props: any) => {
       <Appbar.Action icon="dots-vertical" />
     </Appbar.Header>
   );
-};
+}
 
 export default AppHeader;
