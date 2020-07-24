@@ -1,19 +1,13 @@
-import  React from 'react';
-import { Button, View, Text} from 'react-native';
-import StackNavigation from '../../StackNavigation/StackNavigation';
+import React from "react";
+import { Button, View, Text } from "react-native";
 
 
-const HomeScreen = ({ navigation},props:any)=> {
-    
-    return (
-    
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Text>Home</Text>
+const HomeScreen = ({ navigation }, props: any) => {
+  return (
+    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+      <Text>Home</Text>
+    </View>
+  );
+};
 
-
-      </View>
-    );
-  }
-
-
-  export default HomeScreen;
+export default HomeScreen;
