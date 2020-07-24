@@ -11,6 +11,6 @@ const AccessoriesScreen = ({ navigation }) => {
       />
     </View>
   );
-};
+}
 
 export default AccessoriesScreen;

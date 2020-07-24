@@ -9,12 +9,13 @@ const Drawer = (props: any) => {
     <CustomDrawer.Navigator
       initialRouteName="dashboard"
       drawerContent={DrawerContent}
-      drawerType="slide"
+      drawerStyle={{}}
     >
       <CustomDrawer.Screen name="Screens">
-        {(props) => <Screens {...props} style={{ flex: 1 }} />}
+        {(props) => <Screens {...props} />}
       </CustomDrawer.Screen>
     </CustomDrawer.Navigator>
   );
 };
+
 export default Drawer;

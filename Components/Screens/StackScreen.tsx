@@ -2,7 +2,7 @@ import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import dashboard from "./Home/HomeScreen";
 import accScreen from "./Accessories/AccessoriesScreen";
-import additem from "../Screens/AddItem/AddItem"
+import additem from "../Screens/AddItem/AddItem";
 import AppHeader from "../Header/AppHeader";
 
 const AppStack = createStackNavigator();
@@ -29,7 +29,7 @@ const Screens = ({ navigation }) => {
         options={{ title: "Accessories" }}
         component={accScreen}
       />
-            <AppStack.Screen
+      <AppStack.Screen
         name="additem"
         options={{ title: "Add Item" }}
         component={additem}

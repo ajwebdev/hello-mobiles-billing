@@ -8,6 +8,6 @@ const AddItem = ({ navigation }) => {
       <Button onPress={() => navigation.goBack()} title="Go back" />
     </View>
   );
-};
+}
 
 export default AddItem;

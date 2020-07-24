@@ -1,48 +1,56 @@
 import React from "react";
 import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
 import { View, StyleSheet, Image } from "react-native";
-import { Drawer } from "react-native-paper";
+import Icon from "../Icon/Icon";
 import CustomDrawerItem from "./CustomDrawerItem";
+import { Drawer } from "react-native-paper";
+
 const DrawerContent = (props: any) => {
   const CustomNavigation = (page: string) => {
     return props.navigation.navigate(page);
   };
+
   return (
     <View style={{ flex: 1 }}>
       <DrawerContentScrollView {...props}>
         <Drawer.Section style={styles.drawerSection}>
-          <View style={styles.userInfoSection}>
-            <View style={{ flexDirection: "row" }}>
-              <Image
-                source={require("../../assets/hello-mobiles.png")}
-                style={{ width: 300, height: 100 }}
-              />
-            </View>
+          <View style={{ flexDirection: "row" }}>
+            <Image
+              source={require("../../assets/hello-mobiles.png")}
+              style={styles.Logo}
+            />
           </View>
+
           <CustomDrawerItem
             ItemLabel="Home"
             ItemStyle={styles.label}
             ItemEvent={() => CustomNavigation("dashboard")}
+            ItemIcon={() => <Icon name="home" />}
           />
+
           <CustomDrawerItem
             ItemLabel="Add Accessories"
             ItemStyle={styles.label}
             ItemEvent={() => CustomNavigation("accessories")}
+            ItemIcon={() => <Icon name="list" />}
           />
           <CustomDrawerItem
             ItemLabel="Add Items"
             ItemStyle={styles.label}
             ItemEvent={() => CustomNavigation("additem")}
+            ItemIcon={() => <Icon name="smartphone" />}
           />
           <CustomDrawerItem
             ItemLabel="Products"
             ItemStyle={styles.label}
             ItemEvent={() => CustomNavigation("dashboard")}
+            ItemIcon={() => <Icon name="package" />}
           />
           <CustomDrawerItem
             ItemLabel="Report"
             ItemStyle={styles.label}
             ItemEvent={() => CustomNavigation("dashboard")}
+            ItemIcon={() => <Icon name="file-plus" />}
           />
         </Drawer.Section>
       </DrawerContentScrollView>
@@ -77,27 +85,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginRight: 15,
   },
-  paragraph: {
-    fontWeight: "bold",
-    marginRight: 3,
-  },
   drawerSection: {
-    marginTop: 15,
+    marginTop: 0,
   },
   bottomDrawerSection: {
     marginBottom: 15,
     borderTopColor: "#f4f4f4",
     borderTopWidth: 1,
   },
-  preference: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-  },
+
   label: {
     fontWeight: "bold",
     fontFamily: "Roboto",
+  },
+  Logo: {
+    height: 150,
+    width: 300,
+    marginTop: -5,
   },
 });
 
