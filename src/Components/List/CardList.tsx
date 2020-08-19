@@ -5,7 +5,7 @@ const CardList = (props: any) => {
   return (
     <List.Item
       title={props.Item.access_name}
-      description={props.Item.id}
+      description={props.Item.created_date}
       right={() => {
         return (
           <TouchableOpacity
