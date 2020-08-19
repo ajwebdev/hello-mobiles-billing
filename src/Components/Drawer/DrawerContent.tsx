@@ -16,7 +16,7 @@ const DrawerContent = (props: any) => {
         <Drawer.Section style={styles.drawerSection}>
           <View style={{ flexDirection: "row" }}>
             <Image
-              source={require("../../assets/hello-mobiles.png")}
+              source={require("../../../assets/hello-mobiles.png")}
               style={styles.Logo}
             />
           </View>
@@ -43,13 +43,13 @@ const DrawerContent = (props: any) => {
           <CustomDrawerItem
             ItemLabel="Products"
             ItemStyle={styles.label}
-            ItemEvent={() => CustomNavigation("dashboard")}
+            ItemEvent={() => CustomNavigation("products")}
             ItemIcon={() => <Icon name="package" />}
           />
           <CustomDrawerItem
             ItemLabel="Report"
             ItemStyle={styles.label}
-            ItemEvent={() => CustomNavigation("dashboard")}
+            ItemEvent={() => CustomNavigation("report")}
             ItemIcon={() => <Icon name="file-plus" />}
           />
         </Drawer.Section>

@@ -1,13 +1,13 @@
 import React from "react";
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import DrawerContent from "../Drawer/DrawerContent";
+import DrawerContent from "./DrawerContent";
 import Screens from "../Screens/StackScreen";
 
 const CustomDrawer = createDrawerNavigator();
 const Drawer = (props: any) => {
   return (
     <CustomDrawer.Navigator
-      initialRouteName="dashboard"
+      initialRouteName="accessories"
       drawerContent={DrawerContent}
       drawerStyle={{}}
     >
