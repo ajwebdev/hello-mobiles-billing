@@ -51,7 +51,8 @@ const AccessoriesScreen = ({ navigation }) => {
   };
 
   const renderItem = ({ item }) => {
-    return <CardList Item={item} navigation={navigation} />;
+    return <CardList title={item.access_name} description={item.id} navigation={()=>navigation.navigate("addAccessories",item.id)}   />;
+    
   };
 
   return (

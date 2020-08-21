@@ -2,15 +2,24 @@ import React, { useState, useEffect } from "react";
 import { Text, View } from "react-native";
 import { Button, Card, TextInput } from "react-native-paper";
 import Loader from "../../Loader/Loader";
-import firebase, { db } from "../../firebaseConfig";
+import { db } from "../../firebaseConfig";
 import { isEmpty } from "ramda";
 import { ErrorText } from "../../../utilities/validation";
+import { setTime } from "../../../utilities/setTime";
 
 const AccessoriesScreen = ({ route, navigation }) => {
   const [access, setAccess] = useState("");
   const [isloading, setloading] = useState(true);
   const [error, seterror] = useState(false);
   const id = route.params;
+  
+  useEffect(() => {
+    seterror(false);
+    if (id) fetchSingleDoc();
+    else setloading(false);
+  }, []);
+
+  
   const addAccessories = () => {
     if (!isEmpty(access.trim())) {
       seterror(false);
@@ -19,6 +28,32 @@ const AccessoriesScreen = ({ route, navigation }) => {
       seterror(true);
     }
   };
+  const addData = async () => {
+    await db
+      .collection("accessories")
+      .doc()
+      .set({
+        access_name: access,
+        created_date: setTime(),
+      })
+      .then(() => {
+        navigation.goBack();
+      });
+  };
+
+
+  const updateAccessories = () => {
+    if (id) {
+      if (!isEmpty(access.trim())) {
+        setloading(true);
+        updateData();
+        seterror(false);
+      } else {
+        seterror(true);
+      }
+    }
+  };
+
   const updateData = () => {
     db.collection("accessories")
       .doc(id)
@@ -32,30 +67,7 @@ const AccessoriesScreen = ({ route, navigation }) => {
       });
   };
 
-  const addData = () => {
-    db.collection("accessories")
-      .doc()
-      .set({
-        access_name: access,
-        created_date: firebase.firestore.FieldValue.serverTimestamp(),
-      })
-      .then(() => {
-        alert(access);
-        navigation.goBack();
-      });
-  };
 
-  const updateAccessories = () => {
-    if (id) {
-      if (!isEmpty(access.trim())) {
-        setloading(true);
-        updateData();
-        seterror(false);
-      } else {
-        seterror(true);
-      }
-    }
-  };
   const deleteAccessories = async () => {
     if (id) {
       setloading(true);
@@ -88,12 +100,7 @@ const AccessoriesScreen = ({ route, navigation }) => {
       return <Text style={{ color: "red" }}>{ErrorText(text)}</Text>;
     }
   };
-  useEffect(() => {
-    seterror(false);
-    if (id) fetchSingleDoc();
-    else setloading(false);
-  }, []);
-
+  
   return (
     <View style={{ flex: 1 }}>
       {isloading ? (

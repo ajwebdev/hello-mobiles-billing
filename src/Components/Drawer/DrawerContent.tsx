@@ -34,10 +34,11 @@ const DrawerContent = (props: any) => {
             ItemEvent={() => CustomNavigation("accessories")}
             ItemIcon={() => <Icon name="list" />}
           />
-          <CustomDrawerItem
-            ItemLabel="Add Items"
+         
+            <CustomDrawerItem
+            ItemLabel="Items"
             ItemStyle={styles.label}
-            ItemEvent={() => CustomNavigation("additem")}
+            ItemEvent={() => CustomNavigation("listItem")}
             ItemIcon={() => <Icon name="smartphone" />}
           />
           <CustomDrawerItem

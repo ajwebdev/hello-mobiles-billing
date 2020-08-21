@@ -2,16 +2,17 @@ import React from "react";
 import { createStackNavigator,CardStyleInterpolators } from "@react-navigation/stack";
 import dashboard from "./Home/HomeScreen";
 import accScreen from "./Accessories/AccessoriesScreen";
+import addAccessories from "./Accessories/addAccessories";
 import additem from "./AddItem/AddItem";
+import listItem from "./AddItem/ListItem";
 import products from "./Products/ProductScreen";
 import report from "./Report/ReportScreen";
-import addAccessories from "./Accessories/addAccessories";
 import AppHeader from "../Header/AppHeader";
 
 const AppStack = createStackNavigator();
 const Screens = ({ navigation }) => {
   const headerOptions = {
-    header: ({ scene, previous, navigation }) => {
+    header: ({ scene, navigation }:any) => {
       const { options } = scene.descriptor;
       return (
         <AppHeader HeaderTitle={options.title} navigationProps={navigation} />
@@ -52,6 +53,12 @@ const Screens = ({ navigation }) => {
         name="addAccessories"
         options={{ title: "Add Accessories" }}
         component={addAccessories}
+      />
+
+      <AppStack.Screen
+        name="listItem"
+        options={{ title: "Item List" }}
+        component={listItem}
       />
     </AppStack.Navigator>
   );
