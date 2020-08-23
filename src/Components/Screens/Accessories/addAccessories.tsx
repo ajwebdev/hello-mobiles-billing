@@ -12,14 +12,13 @@ const AccessoriesScreen = ({ route, navigation }) => {
   const [isloading, setloading] = useState(true);
   const [error, seterror] = useState(false);
   const id = route.params;
-  
+
   useEffect(() => {
     seterror(false);
     if (id) fetchSingleDoc();
     else setloading(false);
   }, []);
 
-  
   const addAccessories = () => {
     if (!isEmpty(access.trim())) {
       seterror(false);
@@ -40,7 +39,6 @@ const AccessoriesScreen = ({ route, navigation }) => {
         navigation.goBack();
       });
   };
-
 
   const updateAccessories = () => {
     if (id) {
@@ -67,19 +65,16 @@ const AccessoriesScreen = ({ route, navigation }) => {
       });
   };
 
-
-  const deleteAccessories = async () => {
+  const deleteAccessories =  () => {
     if (id) {
-      setloading(true);
-      await db
+       db
         .collection("accessories")
         .doc(id)
         .delete()
         .then(function () {
-          console.log("Document successfully deleted!");
-        });
-      setloading(false);
       navigation.goBack();
+          
+        });
     }
   };
 
@@ -97,10 +92,47 @@ const AccessoriesScreen = ({ route, navigation }) => {
   };
   const errorShow = (text: String) => {
     if (error) {
-      return <Text style={{ color: "red" }}>{ErrorText(text)}</Text>;
+      return <Text style={{ color: "red" }}>ErrorText(text)</Text>;
     }
   };
-  
+
+  const renderButton = () => {
+    if (id) {
+      return (
+        <View style={{ flexDirection: "row" }}>
+          <Button
+            style={{ marginTop: 25, width: 100, marginLeft: 175 }}
+            icon="camera"
+            mode="outlined"
+            onPress={updateAccessories}
+          >
+            Update
+          </Button>
+          <Button
+            style={{ marginTop: 25, width: 100, marginLeft: -220 }}
+            icon="delete"
+            mode="outlined"
+            onPress={deleteAccessories}
+            color="red"
+          >
+            delete
+          </Button>
+        </View>
+      );
+    } else {
+      return (
+        <Button
+          style={{ marginTop: 25, width: 100, marginLeft: 175 }}
+          icon="camera"
+          mode="contained"
+          onPress={addAccessories}
+        >
+          Add
+        </Button>
+      );
+    }
+  };
+
   return (
     <View style={{ flex: 1 }}>
       {isloading ? (
@@ -118,37 +150,7 @@ const AccessoriesScreen = ({ route, navigation }) => {
                 error={error}
               />
               {errorShow("Accessorie Name")}
-
-              {id ? (
-                <View style={{ flexDirection: "row" }}>
-                  <Button
-                    style={{ marginTop: 25, width: 100, marginLeft: 175 }}
-                    icon="camera"
-                    mode="outlined"
-                    onPress={updateAccessories}
-                  >
-                    Update
-                  </Button>
-                  <Button
-                    style={{ marginTop: 25, width: 100, marginLeft: -220 }}
-                    icon="delete"
-                    mode="outlined"
-                    onPress={deleteAccessories}
-                    color="red"
-                  >
-                    delete
-                  </Button>
-                </View>
-              ) : (
-                <Button
-                  style={{ marginTop: 25, width: 100, marginLeft: 175 }}
-                  icon="camera"
-                  mode="contained"
-                  onPress={addAccessories}
-                >
-                  Add
-                </Button>
-              )}
+              {renderButton()}
             </Card.Content>
           </Card>
         </View>

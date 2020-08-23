@@ -37,9 +37,9 @@ const AccessoriesScreen = ({ navigation }) => {
   };
 
   const listAccess = () => {
-    let listView = <EmptyScreen Text="Please Add Categories"/>;
+    
     if (!isEmpty(access)) {
-      listView = (
+      return (
         <CustomFlatList
           data={access}
           renderItem={renderItem}
@@ -47,7 +47,10 @@ const AccessoriesScreen = ({ navigation }) => {
         />
       );
     }
-    return listView;
+    else{
+      return  <EmptyScreen Text="Please Add Categories"/>;
+    }
+    
   };
 
   const renderItem = ({ item }) => {

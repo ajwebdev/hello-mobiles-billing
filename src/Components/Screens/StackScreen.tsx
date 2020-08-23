@@ -35,7 +35,7 @@ const Screens = ({ navigation }) => {
         component={accScreen}
       />
       <AppStack.Screen
-        name="additem"
+        name="addItem"
         options={{ title: "Add Item" }}
         component={additem}
       />
