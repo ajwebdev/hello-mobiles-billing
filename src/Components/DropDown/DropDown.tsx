@@ -4,9 +4,9 @@ import {StyleSheet} from "react-native";
 import SearchableDropdown from "react-native-searchable-dropdown";
 
 const Dropdown = (props: any) => {
+
   return (
-    <SearchableDropdown
-    multi={true}
+    <SearchableDropdown 
       onItemSelect={props.onItemSelect}
       containerStyle={{ padding: 5 }}
       itemStyle={styles.itemStyle}
@@ -15,16 +15,16 @@ const Dropdown = (props: any) => {
       items={props.items}
       defaultIndex={2}
       resetValue={false}
-      chip={true}
+      placeholderTextColor={props.value?'black':'gray'}
       textInputProps={{
-        placeholder: props.placeholder?props.placeholder:"placeholder",
+        placeholder: props.value?props.value:props.placeholder,
         underlineColorAndroid: "transparent",
         style: styles.textInputProps,
       }}
       listProps={{
         nestedScrollEnabled: true,
       }}
-      value={props.value}
+      
     />
   );
 };
@@ -37,7 +37,9 @@ const styles = StyleSheet.create({
         backgroundColor: "white",
         borderColor: "#bbb",
         borderWidth: 1,
-        borderRadius: 0,
+        borderRadius: 5,
+      
+        right:0
     },
     itemTextStyle:{
          color: "#222" 
@@ -46,10 +48,13 @@ const styles = StyleSheet.create({
          maxHeight: 140
      },
      textInputProps:{
-        padding: 12,
+        padding: 16,
         borderWidth: 1,
         borderColor: "gray",
         borderRadius: 5,
+        color:"black",
+        width:315,
+        right:5
      }
 })
 

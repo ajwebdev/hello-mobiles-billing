@@ -3,7 +3,7 @@ import { View, Text, Button, StyleSheet } from "react-native";
 import { FAB } from "react-native-paper";
 import CardList from "././../../List/CardList";
 import { db } from "../../firebaseConfig";
-import { isEmpty } from "ramda";
+import { isEmpty, equals, always, cond, T } from "ramda";
 import CustomFlatList from "../../List/CustomFlatList";
 import EmptyScreen from "../EmptyScreen";
 import Loader from "../../Loader/Loader";
@@ -12,21 +12,20 @@ const ListItem = ({ navigation }: any) => {
   const [item, updateItem] = useState();
   const [isLoading, setLoading] = useState(false);
   useEffect(() => {
-    fetchAccess();
+    fetchItem();
     const subscribe = navigation.addListener("focus", () => {
-      fetchAccess();
+      fetchItem();
     });
     return subscribe;
   }, [navigation]);
 
-  const fetchAccess = async () => {
+  const fetchItem = async () => {
     setLoading(true);
 
     var item_data:any = [];
     var docRef = db.collection("items");
     await docRef
       .orderBy("itemCreatedAt")
-      .limit(50)
       .get()
       .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
@@ -51,7 +50,6 @@ const ListItem = ({ navigation }: any) => {
   const renderItem = ({ item }) => {
     const title=item.itemName +" "+item.model+" ("+item.access_name+")";
     const description="Price :"+item.customerPrice+"\n"+"Stock :"+item.quantity;
-
     return (
       <CardList
         title={title}
@@ -61,23 +59,15 @@ const ListItem = ({ navigation }: any) => {
     );
   };
 
-  const listItem = () => {
-    if (!isEmpty(item)) {
-      return (
-        <CustomFlatList
-          data={item}
-          renderItem={renderItem}
-          keyExtractor={(item: any) => item.id}
-        />
-      );
-    } else {
-      return <EmptyScreen Text="Please Add Items" />;
-    }
-  };
+const listItem=cond([
+  [equals([] || undefined),always(<EmptyScreen Text="Please Add Item" />)],
+  [T, always(<CustomFlatList data={item} renderItem={renderItem}  keyExtractor={(item: any) => item.id}
+        />)]
+]) 
 
   return (
     <View style={{ flex: 1 }}>
-      {isLoading ? <Loader isLoading={isLoading} /> : listItem()}
+      {isLoading ? <Loader isLoading={isLoading} /> : listItem(item)}
 
       <FAB
         icon="plus"

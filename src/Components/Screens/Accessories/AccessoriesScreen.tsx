@@ -6,8 +6,8 @@ import { db } from "../../firebaseConfig";
 import CardList from "../../List/CardList";
 import EmptyScreen from "../EmptyScreen";
 import CustomFlatList from "../../List/CustomFlatList";
-import { isEmpty } from "ramda";
-
+import { isEmpty, equals, always, T } from "ramda";
+import { cond } from "ramda";
 const AccessoriesScreen = ({ navigation }) => {
   const [access, updateAccess] = useState();
   const [isLoading, setLoading] = useState(false);
@@ -23,44 +23,40 @@ const AccessoriesScreen = ({ navigation }) => {
     setLoading(true);
     var access_data = [];
     var docRef = db.collection("accessories");
-    await docRef.orderBy('created_date')
-      .limit(50)
+    await docRef
+      .orderBy("created_date")
       .get()
       .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
-          const data = { id: doc.id, access_name: doc.data().access_name};
+          const data = { id: doc.id, access_name: doc.data().access_name };
           access_data.push(data);
         });
         setLoading(false);
         updateAccess(access_data);
+        console.log(access)
       });
   };
 
-  const listAccess = () => {
-    
-    if (!isEmpty(access)) {
-      return (
-        <CustomFlatList
-          data={access}
-          renderItem={renderItem}
-          keyExtractor={(item: any) => item.id}
-        />
-      );
-    }
-    else{
-      return  <EmptyScreen Text="Please Add Categories"/>;
-    }
-    
+  const renderItem = ({ item }) => {
+    return (
+      <CardList
+        title={item.access_name}
+        navigation={() => navigation.navigate("addAccessories", item.id)}
+      />
+    );
   };
 
-  const renderItem = ({ item }) => {
-    return <CardList title={item.access_name} description={item.id} navigation={()=>navigation.navigate("addAccessories",item.id)}   />;
-    
-  };
+  const renderAccessories = cond([
+    [equals([]), always(<EmptyScreen Text="Please Add Accessories" />)],
+    [T,always( <CustomFlatList data={access} renderItem={renderItem}
+          keyExtractor={(item: any) => item.id} />),],
+  ]);
+
+ 
 
   return (
     <View style={{ flex: 1 }}>
-      {isLoading ? <Loader isLoading={isLoading} /> : listAccess()}
+      {isLoading ? <Loader isLoading={isLoading} /> : renderAccessories(access)}
       <FAB
         icon="plus"
         style={styles.fab}

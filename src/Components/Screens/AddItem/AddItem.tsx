@@ -151,8 +151,9 @@ const AddItem = ({ navigation, route }: any) => {
                       updateAccessName(text);
                     }}
                     items={access}
-                    value={accessName.name}
+                    selectedItems={accessName.name}
                     placeholder="Accessories"
+                    value={accessName.name}
                   />
                   <TouchableOpacity
                     onPress={() => navigation.navigate("addAccessories")}
