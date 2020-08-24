@@ -17,7 +17,7 @@ import style from "../../Header/HeaderStyle";
 
 const AddItem = ({ navigation, route }: any) => {
   const [access, updateAccess] = useState([{}]);
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(true);
   const [accessName, updateAccessName] = useState({ id: "", name: "" });
   const [itemName, updateItemName] = useState("");
   const [model, updateModel] = useState("");
@@ -28,11 +28,12 @@ const AddItem = ({ navigation, route }: any) => {
   useEffect(() => {
     const subscribe = navigation.addListener("focus", () => {
       fetchAccess();
+      if (!id) {
+        setLoading(false);
+      }
     });
     if (id) {
-      setLoading(true);
       fetchSingleDoc();
-      setLoading(false);
     }
     return subscribe;
   }, [navigation]);
@@ -53,7 +54,6 @@ const AddItem = ({ navigation, route }: any) => {
       });
   };
   const fetchSingleDoc = async () => {
-    setLoading(true);
     var docRef = db.collection("items").doc(id);
     await docRef.get().then((doc) => {
       if (doc.exists) {
@@ -74,10 +74,9 @@ const AddItem = ({ navigation, route }: any) => {
         navigation.goBack();
       }
     });
+    setLoading(false);
   };
-
   const addItem = async () => {
-    setLoading(true);
     await db
       .collection("items")
       .doc()
@@ -92,11 +91,21 @@ const AddItem = ({ navigation, route }: any) => {
         itemCreatedAt: setTime(),
       })
       .then(() => navigation.navigate("listItem"));
-    setLoading(false);
   };
 
+  const delItem = () => {
+    if (id) {
+      db.collection("items")
+        .doc(id)
+        .delete()
+        .then(function () {
+          navigation.goBack();
+        });
+    }
+  };
   const updateItem = async () => {
     setLoading(true);
+
     await db
       .collection("items")
       .doc(id)
@@ -173,6 +182,8 @@ const AddItem = ({ navigation, route }: any) => {
                       label="Quantity"
                       onChangeText={(quantity) => updateQuantity(quantity)}
                       value={quantity}
+                      keyboardType={'numeric'}
+                      contextMenuHidden={true}
                     />
                   </View>
                   <View style={styles.input}>
@@ -183,6 +194,8 @@ const AddItem = ({ navigation, route }: any) => {
                         updateCustomerPrice(customerPrice)
                       }
                       value={customerPrice}
+                      keyboardType={'numeric'}
+                      contextMenuHidden={true}
                     />
                   </View>
                   <View style={styles.input}>
@@ -193,6 +206,8 @@ const AddItem = ({ navigation, route }: any) => {
                         updateRetailerPrice(retailerPrice)
                       }
                       value={retailerPrice}
+                      keyboardType={'numeric'}
+                      contextMenuHidden={true}
                     />
                   </View>
 
@@ -203,6 +218,15 @@ const AddItem = ({ navigation, route }: any) => {
                   >
                     {id ? "Update Item" : "Add Item"}
                   </Button>
+                  {id && (
+                    <Button
+                      mode="contained"
+                      style={{ marginTop: 15, backgroundColor: "red" }}
+                      onPress={delItem}
+                    >
+                      Delete Item
+                    </Button>
+                  )}
                 </Card.Content>
               </Card>
             </View>

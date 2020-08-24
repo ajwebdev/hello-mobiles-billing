@@ -6,6 +6,7 @@ import SearchableDropdown from "react-native-searchable-dropdown";
 const Dropdown = (props: any) => {
   return (
     <SearchableDropdown
+    multi={true}
       onItemSelect={props.onItemSelect}
       containerStyle={{ padding: 5 }}
       itemStyle={styles.itemStyle}
@@ -14,6 +15,7 @@ const Dropdown = (props: any) => {
       items={props.items}
       defaultIndex={2}
       resetValue={false}
+      chip={true}
       textInputProps={{
         placeholder: props.placeholder?props.placeholder:"placeholder",
         underlineColorAndroid: "transparent",
