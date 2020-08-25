@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, Button, StyleSheet } from "react-native";
-import { FAB } from "react-native-paper";
+import { FAB, DataTable, List } from "react-native-paper";
 import CardList from "././../../List/CardList";
 import { db } from "../../firebaseConfig";
-import { isEmpty, equals, always, cond, T } from "ramda";
+import { isEmpty, equals, always, cond, T, sort } from "ramda";
 import CustomFlatList from "../../List/CustomFlatList";
 import EmptyScreen from "../EmptyScreen";
 import Loader from "../../Loader/Loader";
@@ -11,6 +11,8 @@ import Loader from "../../Loader/Loader";
 const ListItem = ({ navigation }: any) => {
   const [item, updateItem] = useState();
   const [isLoading, setLoading] = useState(false);
+  const [sort, setSort] = useState({col:"itemCreatedAt",dir:"desc"});
+
   useEffect(() => {
     fetchItem();
     const subscribe = navigation.addListener("focus", () => {
@@ -21,11 +23,10 @@ const ListItem = ({ navigation }: any) => {
 
   const fetchItem = async () => {
     setLoading(true);
-
     var item_data:any = [];
     var docRef = db.collection("items");
     await docRef
-      .orderBy("itemCreatedAt")
+      .orderBy(sort.col,sort.dir)
       .get()
       .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
@@ -56,6 +57,7 @@ const ListItem = ({ navigation }: any) => {
         description={description}
         navigation={() => navigation.navigate("addItem", item.id)}
       />
+
     );
   };
 

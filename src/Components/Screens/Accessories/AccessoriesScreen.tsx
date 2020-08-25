@@ -11,6 +11,7 @@ import { cond } from "ramda";
 const AccessoriesScreen = ({ navigation }) => {
   const [access, updateAccess] = useState();
   const [isLoading, setLoading] = useState(false);
+  const [sort, setSort] = useState({col:"itemCreatedAt",dir:"desc"});
 
   useEffect(() => {
     const subscribe = navigation.addListener("focus", () => {
@@ -24,7 +25,7 @@ const AccessoriesScreen = ({ navigation }) => {
     var access_data = [];
     var docRef = db.collection("accessories");
     await docRef
-      .orderBy("created_date")
+      .orderBy(sort.col,sort.dir)
       .get()
       .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
