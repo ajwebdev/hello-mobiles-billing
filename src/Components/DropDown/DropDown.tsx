@@ -5,6 +5,35 @@ import SearchableDropdown from "react-native-searchable-dropdown";
 
 const Dropdown = (props: any) => {
 
+  const error=props.error?"darkred":"gray";
+  const styles = StyleSheet.create({
+    itemStyle:{
+        padding: 10,
+        marginTop: 2,
+        backgroundColor: "white",
+        borderColor: "#bbb",
+        borderWidth: 2,
+        borderRadius: 5,
+      
+        right:0
+    },
+    itemTextStyle:{
+         color: "#222" 
+    },
+    itemsContainerStyle:{
+         maxHeight: 140
+     },
+     textInputProps:{
+        padding: 16,
+        borderWidth: 1,
+        borderColor:error,
+        borderRadius: 5,
+        color:"black",
+        width:315,
+        right:5
+     }
+})
+
   return (
     <SearchableDropdown 
       onItemSelect={props.onItemSelect}
@@ -20,6 +49,7 @@ const Dropdown = (props: any) => {
         placeholder: props.value?props.value:props.placeholder,
         underlineColorAndroid: "transparent",
         style: styles.textInputProps,
+        onChangeText:props.changeText
       }}
       listProps={{
         nestedScrollEnabled: true,
@@ -30,32 +60,5 @@ const Dropdown = (props: any) => {
 };
 
 
-const styles = StyleSheet.create({
-    itemStyle:{
-        padding: 10,
-        marginTop: 2,
-        backgroundColor: "white",
-        borderColor: "#bbb",
-        borderWidth: 1,
-        borderRadius: 5,
-      
-        right:0
-    },
-    itemTextStyle:{
-         color: "#222" 
-    },
-    itemsContainerStyle:{
-         maxHeight: 140
-     },
-     textInputProps:{
-        padding: 16,
-        borderWidth: 1,
-        borderColor: "gray",
-        borderRadius: 5,
-        color:"black",
-        width:315,
-        right:5
-     }
-})
 
 export default Dropdown;
