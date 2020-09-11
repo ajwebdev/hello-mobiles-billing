@@ -8,6 +8,8 @@ const CardList = (props: any) => {
     <List.Item
       title={title}
       description={description}
+      {...props}
+      style={props.Cstyle}
       right={() => {
         return (
           <TouchableOpacity onPress={props.navigation}>

@@ -7,7 +7,7 @@ const CustomDrawerItem = (props: any) => {
       style={props.ItemStyle}
       onPress={props.ItemEvent}
       icon={props.ItemIcon}
-      labelStyle={{ fontWeight: "bold", color: "black" }}
+      labelStyle={props.labelStyle}
       activeBackgroundColor="#CDA5EE"
       activeTintColor="black"
     />

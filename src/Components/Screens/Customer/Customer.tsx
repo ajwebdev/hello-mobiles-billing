@@ -20,28 +20,23 @@ import { ErrorText } from "../../../utilities/validation";
 
 import Loader from "../../Loader/Loader";
 import { isEmpty, cond, equals, always } from "ramda";
-import Dropdown from "../../DropDown/DropDown";
-
 const AddItem = ({ navigation, route }: any) => {
-  const [access, updateAccess] = useState([{}]);
-  const [isLoading, setLoading] = useState(true);
+  const [isLoading, setLoading] = useState(false);
   const [accessName, updateAccessName] = useState({
     id: "",
     name: "",
     error: false,
   });
-  const [itemName, updateItemName] = useState({ val: "", error: false });
-  const [model, updateModel] = useState({ val: "", error: false });
-  const [quantity, updateQuantity] = useState({ val: "", error: false });
-  const [customerPrice, updateCustomerPrice] = useState({
+  const [customerName, updateCustomerName] = useState({ val: "", error: false });
+  const [phoneNo, updatePhoneNo] = useState({ val: "", error: false });
+  const [imei1, updateImei1] = useState({ val: "", error: false });
+  const [imei2, updateImei2] = useState({
     val: "",
     error: false,
   });
-  const [retailerPrice, updateRetailerPrice] = useState({
-    val: "",
-    error: false,
-  });
+
   const id = route.params;
+// const id=1;
   useEffect(() => {
     const subscribe = navigation.addListener("focus", () => {
       fetchAccess();
@@ -100,19 +95,16 @@ const AddItem = ({ navigation, route }: any) => {
     setLoading(false);
   };
 
-  const addItem = async () => {
+  const addCustomer = async () => {
     await db
-      .collection("items")
+      .collection("customers")
       .doc()
       .set({
-        accessName: accessName.name,
-        accessNameId: accessName.id,
-        itemName: itemName.val,
-        model: model.val,
-        quantity: quantity.val,
-        customerPrice: customerPrice.val,
-        retailerPrice: retailerPrice.val,
-        itemCreatedAt: setTime(),
+        customerName: customerName.val,
+        phoneNo: phoneNo.val,
+        ime1: ime1.val,
+        ime2: ime2.val,
+        customerCreatedAt: setTime(),
       })
       .then(() => navigation.navigate("listItem"));
   };
@@ -135,24 +127,6 @@ const AddItem = ({ navigation, route }: any) => {
     updateFn({ ...stateName, ...text });
   };
 
-  const hasError = () => {
-    if (
-      !accessName.error &&
-      accessName.name.trim() &&
-      !itemName.error &&
-      itemName.val.trim() &&
-      !quantity.error &&
-      quantity.val.trim() &&
-      !customerPrice.error &&
-      customerPrice.val.trim() &&
-      !retailerPrice.error &&
-      retailerPrice.val.trim()
-    ) {
-      return false;
-    } else {
-      return true;
-    }
-  };
 
   const delItem = () => {
     if (id) {
@@ -164,7 +138,7 @@ const AddItem = ({ navigation, route }: any) => {
         });
     }
   };
-  const updateItem = async () => {
+  const updateCustomer = async () => {
     setLoading(true);
 
     await db
@@ -205,115 +179,76 @@ const AddItem = ({ navigation, route }: any) => {
           <ScrollView keyboardShouldPersistTaps="always">
             <View style={{ padding: 5 }}>
               <Card style={{ width: "auto", marginTop: 25 }}>
-                <Card.Title title={id ? "Update Item" : "Add Item"} />
+                <Card.Title title={id ? "Edit Customer" : "Add Customer"} />
                 <Card.Content>
-                  <Dropdown
-                    onItemSelect={(text: object) => {
-                      const newText = { ...text, ...{ error: false } };
-                      updateAccessName({ ...accessName, ...newText });
-                    }}
-                    items={access}
-                    selectedItems={accessName.name}
-                    placeholder="Accessories"
-                    value={accessName.name}
-                    error={accessName.error}
-                  />
-                  <HelperText type="error" visible={accessName.error}>
-                    {ErrorText("Accessories")}
-                  </HelperText>
-                  <TouchableOpacity
-                    onPress={() => navigation.navigate("addAccessories")}
-                  >
-                    <Text style={styles.sideText}>Add Accessories</Text>
-                  </TouchableOpacity>
+       
                   <View style={styles.input}>
                     <TextInput
                       mode="outlined"
-                      label="Product Name"
+                      label="Customer Name"
                       onChangeText={(text) =>
-                        updateStates(text, itemName, updateItemName)
+                        updateStates(text, customerName, updateCustomerName)
                       }
-                      value={itemName.val}
-                      error={itemName.error}
+                      value={customerName.val}
+                      error={customerName.error}
                     />
-                    <HelperText type="error" visible={itemName.error}>
-                      {ErrorText("Product Name")}
-                    </HelperText>
+                    {/* <HelperText type="error" visible={itemName.error}>
+                      {ErrorText("Customer Name")}
+                    </HelperText> */}
                   </View>
+                  <View style={styles.input}>
+                    <TextInput
+                      mode="outlined"
+                      label="Customer No"
+                      maxLength = {10}
+                      onChangeText={(text) =>
+                        updateStates(text, phoneNo, updatePhoneNo)
+                      }
+                      value={phoneNo.val}
+                    
+                    />
+              
+                  </View>
+                  <View style={styles.input}>
+                    <TextInput
+                      mode="outlined"
+                      label="IMEI 1"
+                      onChangeText={(text) =>
+                        updateStates(text, imei1, updateImei1)
+                      }
+                      maxLength = {16}
 
-                  <View style={styles.input}>
-                    <TextInput
-                      mode="outlined"
-                      label="Product Model"
-                      onChangeText={(models) =>
-                        updateModel({ ...model, ...{ val: models } })
-                      }
-                      value={model.val}
-                      error={model.error}
-                    />
-                    <HelperText type="error" visible={model.error}>
-                      {ErrorText("Product Model")}
-                    </HelperText>
-                  </View>
-                  <View style={styles.input}>
-                    <TextInput
-                      mode="outlined"
-                      label="Quantity"
-                      onChangeText={(text) =>
-                        updateStates(text, quantity, updateQuantity)
-                      }
-                      value={quantity.val}
-                      error={quantity.error}
+                      value={imei1.val}
                       keyboardType={"numeric"}
                       contextMenuHidden={true}
                     />
-                    <HelperText type="error" visible={quantity.error}>
-                      {ErrorText("Quantity")}
-                    </HelperText>
+              
                   </View>
                   <View style={styles.input}>
-                    <TextInput
+                  <TextInput
                       mode="outlined"
-                      label="Customer Price"
+                      label="IMEI 2"
                       onChangeText={(text) =>
-                        updateStates(text, customerPrice, updateCustomerPrice)
+                        updateStates(text, imei2, updateImei2)
                       }
-                      value={customerPrice.val}
-                      error={customerPrice.error}
+                      maxLength = {16}
+                      value={imei2.val}
                       keyboardType={"numeric"}
                       contextMenuHidden={true}
                     />
-                    <HelperText type="error" visible={customerPrice.error}>
-                      {ErrorText("customerPrice")}
-                    </HelperText>
                   </View>
-                  <View style={styles.input}>
-                    <TextInput
-                      mode="outlined"
-                      label="Retailer Price"
-                      onChangeText={(text) =>
-                        updateStates(text, retailerPrice, updateRetailerPrice)
-                      }
-                      value={retailerPrice.val}
-                      error={retailerPrice.error}
-                      keyboardType={"numeric"}
-                      contextMenuHidden={true}
-                    />
-                    <HelperText type="error" visible={retailerPrice.error}>
-                      {ErrorText("Retailer Price")}
-                    </HelperText>
-                  </View>
+            
                   <Button
                     mode="contained"
                     style={{ marginTop: 15 }}
                     onPress={
                       id
-                        ? () => validation(updateItem)
-                        : () => validation(addItem)
+                        ? () => validation(updateCustomer)
+                        : () => validation(addCustomer)
                     }
-                    disabled={hasError()}
+                   
                   >
-                    {id ? "Update Item" : "Add Item"}
+                    {id ? "Update" : "Add "}
                   </Button>
                   {id && (
                     <Button

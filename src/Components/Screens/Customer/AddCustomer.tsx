@@ -20,8 +20,6 @@ import { ErrorText } from "../../../utilities/validation";
 
 import Loader from "../../Loader/Loader";
 import { isEmpty, cond, equals, always } from "ramda";
-import Dropdown from "../../DropDown/DropDown";
-
 const AddItem = ({ navigation, route }: any) => {
   const [access, updateAccess] = useState([{}]);
   const [isLoading, setLoading] = useState(true);
@@ -205,31 +203,13 @@ const AddItem = ({ navigation, route }: any) => {
           <ScrollView keyboardShouldPersistTaps="always">
             <View style={{ padding: 5 }}>
               <Card style={{ width: "auto", marginTop: 25 }}>
-                <Card.Title title={id ? "Update Item" : "Add Item"} />
+                <Card.Title title={id ? "Edit Customer" : "Add Customer"} />
                 <Card.Content>
-                  <Dropdown
-                    onItemSelect={(text: object) => {
-                      const newText = { ...text, ...{ error: false } };
-                      updateAccessName({ ...accessName, ...newText });
-                    }}
-                    items={access}
-                    selectedItems={accessName.name}
-                    placeholder="Accessories"
-                    value={accessName.name}
-                    error={accessName.error}
-                  />
-                  <HelperText type="error" visible={accessName.error}>
-                    {ErrorText("Accessories")}
-                  </HelperText>
-                  <TouchableOpacity
-                    onPress={() => navigation.navigate("addAccessories")}
-                  >
-                    <Text style={styles.sideText}>Add Accessories</Text>
-                  </TouchableOpacity>
+       
                   <View style={styles.input}>
                     <TextInput
                       mode="outlined"
-                      label="Product Name"
+                      label="Customer Name"
                       onChangeText={(text) =>
                         updateStates(text, itemName, updateItemName)
                       }
@@ -237,55 +217,46 @@ const AddItem = ({ navigation, route }: any) => {
                       error={itemName.error}
                     />
                     <HelperText type="error" visible={itemName.error}>
-                      {ErrorText("Product Name")}
+                      {ErrorText("Customer Name")}
                     </HelperText>
                   </View>
 
                   <View style={styles.input}>
                     <TextInput
                       mode="outlined"
-                      label="Product Model"
+                      label="Customer No"
                       onChangeText={(models) =>
                         updateModel({ ...model, ...{ val: models } })
                       }
                       value={model.val}
-                      error={model.error}
+                    
                     />
-                    <HelperText type="error" visible={model.error}>
-                      {ErrorText("Product Model")}
-                    </HelperText>
+              
                   </View>
                   <View style={styles.input}>
                     <TextInput
                       mode="outlined"
-                      label="Quantity"
+                      label="IMEI No.1"
                       onChangeText={(text) =>
                         updateStates(text, quantity, updateQuantity)
                       }
                       value={quantity.val}
-                      error={quantity.error}
                       keyboardType={"numeric"}
                       contextMenuHidden={true}
                     />
-                    <HelperText type="error" visible={quantity.error}>
-                      {ErrorText("Quantity")}
-                    </HelperText>
+              
                   </View>
                   <View style={styles.input}>
-                    <TextInput
+                  <TextInput
                       mode="outlined"
-                      label="Customer Price"
+                      label="IMEI No.2"
                       onChangeText={(text) =>
-                        updateStates(text, customerPrice, updateCustomerPrice)
+                        updateStates(text, quantity, updateQuantity)
                       }
-                      value={customerPrice.val}
-                      error={customerPrice.error}
+                      value={quantity.val}
                       keyboardType={"numeric"}
                       contextMenuHidden={true}
                     />
-                    <HelperText type="error" visible={customerPrice.error}>
-                      {ErrorText("customerPrice")}
-                    </HelperText>
                   </View>
                   <View style={styles.input}>
                     <TextInput

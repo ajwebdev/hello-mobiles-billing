@@ -9,6 +9,7 @@ const CustomFlatList = (props: any) => {
           data={props.data}
           renderItem={props.renderItem}
           keyExtractor={props.keyExtractor}
+          {...props}
         />
       </SafeAreaView>
     </View>

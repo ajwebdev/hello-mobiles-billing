@@ -11,7 +11,7 @@ import { cond } from "ramda";
 const AccessoriesScreen = ({ navigation }) => {
   const [access, updateAccess] = useState();
   const [isLoading, setLoading] = useState(false);
-  const [sort, setSort] = useState({col:"itemCreatedAt",dir:"desc"});
+  const [sort, setSort] = useState({col:"created_date",dir:"desc"});
 
   useEffect(() => {
     const subscribe = navigation.addListener("focus", () => {
@@ -48,7 +48,7 @@ const AccessoriesScreen = ({ navigation }) => {
   };
 
   const renderAccessories = cond([
-    [equals([]), always(<EmptyScreen Text="Please Add Accessories" />)],
+    [equals([] || undefined), always(<EmptyScreen Text="`Please` Add Accessories" />)],
     [T,always( <CustomFlatList data={access} renderItem={renderItem}
           keyExtractor={(item: any) => item.id} />),],
   ]);

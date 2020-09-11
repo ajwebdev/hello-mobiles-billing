@@ -6,6 +6,7 @@ import addAccessories from "./Accessories/addAccessories";
 import additem from "./AddItem/AddItem";
 import listItem from "./AddItem/ListItem";
 import products from "./Products/ProductScreen";
+import customer from "./Customer/Customer";
 import report from "./Report/ReportScreen";
 import AppHeader from "../Header/AppHeader";
 
@@ -59,6 +60,12 @@ const Screens = ({ navigation }) => {
         name="listItem"
         options={{ title: "Item List" }}
         component={listItem}
+      />
+      
+      <AppStack.Screen
+        name="customer"
+        options={{ title: "Customers" }}
+        component={customer}
       />
     </AppStack.Navigator>
   );

@@ -3,8 +3,7 @@ import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
 import { View, StyleSheet, Image } from "react-native";
 import Icon from "../Icon/Icon";
 import CustomDrawerItem from "./CustomDrawerItem";
-import { Drawer } from "react-native-paper";
-
+import { Drawer, List } from "react-native-paper";        
 const DrawerContent = (props: any) => {
   const CustomNavigation = (page: string) => {
     return props.navigation.navigate(page);
@@ -26,32 +25,72 @@ const DrawerContent = (props: any) => {
             ItemStyle={styles.label}
             ItemEvent={() => CustomNavigation("dashboard")}
             ItemIcon={() => <Icon name="home" />}
+            labelStyle={styles.labelStyle}
           />
-
           <CustomDrawerItem
-            ItemLabel="Add Accessories"
+            ItemLabel="Accessories"
             ItemStyle={styles.label}
             ItemEvent={() => CustomNavigation("accessories")}
             ItemIcon={() => <Icon name="list" />}
+            labelStyle={styles.labelStyle}
           />
-         
-            <CustomDrawerItem
+
+          <CustomDrawerItem
             ItemLabel="Items"
             ItemStyle={styles.label}
             ItemEvent={() => CustomNavigation("listItem")}
             ItemIcon={() => <Icon name="smartphone" />}
+            labelStyle={styles.labelStyle}
           />
+          {/* <List.Accordion
+            title="Accessories"
+            style={styles.listAccordion}
+            titleStyle={{ fontWeight: "bold", fontSize: 13, left: 5 }}
+            left={(props) => <List.Icon {...props} icon="view-list" />}
+          >
+            <CustomDrawerItem
+              ItemLabel="View Accessories"
+              ItemStyle={styles.labelInside}
+              ItemEvent={() => CustomNavigation("accessories")}
+            />
+            <CustomDrawerItem
+              ItemLabel="Add Accessories"
+              ItemStyle={styles.labelInside}
+              ItemEvent={() => CustomNavigation("addAccessories")}
+            />
+          </List.Accordion>
+
+          <List.Accordion
+            title="Products"
+            style={styles.listAccordion}
+            titleStyle={{ fontWeight: "bold", fontSize: 13, left: 5 }}
+            left={(props) => <List.Icon {...props} icon="headphones" />}
+          >
+            <CustomDrawerItem
+              ItemLabel="View Items"
+              ItemStyle={styles.labelInside}
+              ItemEvent={() => CustomNavigation("listItem")}
+            />
+            <CustomDrawerItem
+              ItemLabel="Add Items"
+              ItemStyle={styles.labelInside}
+              ItemEvent={() => CustomNavigation("addItem")}
+            />
+          </List.Accordion> */}
+
           <CustomDrawerItem
-            ItemLabel="Products"
+            ItemLabel="Customers"
             ItemStyle={styles.label}
-            ItemEvent={() => CustomNavigation("products")}
-            ItemIcon={() => <Icon name="package" />}
+            ItemEvent={() => CustomNavigation("customer")}
+            ItemIcon={() => <Icon name="users" />}
+            labelStyle={styles.labelStyle}
           />
           <CustomDrawerItem
             ItemLabel="Report"
             ItemStyle={styles.label}
             ItemEvent={() => CustomNavigation("report")}
             ItemIcon={() => <Icon name="file-plus" />}
+            labelStyle={styles.labelStyle}
           />
         </Drawer.Section>
       </DrawerContentScrollView>
@@ -64,18 +103,7 @@ const styles = StyleSheet.create({
   drawerContent: {
     flex: 1,
   },
-  userInfoSection: {
-    paddingLeft: 0,
-  },
-  title: {
-    fontSize: 16,
-    marginTop: 3,
-    fontWeight: "bold",
-  },
-  caption: {
-    fontSize: 14,
-    lineHeight: 14,
-  },
+
   row: {
     marginTop: 20,
     flexDirection: "row",
@@ -89,15 +117,22 @@ const styles = StyleSheet.create({
   drawerSection: {
     marginTop: 0,
   },
-  bottomDrawerSection: {
-    marginBottom: 15,
-    borderTopColor: "#f4f4f4",
-    borderTopWidth: 1,
-  },
 
   label: {
     fontWeight: "bold",
     fontFamily: "Roboto",
+  },
+  labelInside: {
+    fontFamily: "Roboto",
+    left: 70,
+    color: "black",
+  },
+  labelStyle: {
+    fontWeight: "bold",
+    color: "black",
+  },
+  listAccordion: {
+    right: 8,
   },
   Logo: {
     height: 150,
