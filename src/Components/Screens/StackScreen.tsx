@@ -7,6 +7,7 @@ import additem from "./AddItem/AddItem";
 import listItem from "./AddItem/ListItem";
 import products from "./Products/ProductScreen";
 import customer from "./Customer/Customer";
+import service from "./Service/Service";
 import report from "./Report/ReportScreen";
 import AppHeader from "../Header/AppHeader";
 
@@ -66,6 +67,11 @@ const Screens = ({ navigation }) => {
         name="customer"
         options={{ title: "Customers" }}
         component={customer}
+      />
+       <AppStack.Screen
+        name="service"
+        options={{ title: "Service" }}
+        component={service}
       />
     </AppStack.Navigator>
   );

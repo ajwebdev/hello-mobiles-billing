@@ -85,6 +85,13 @@ const DrawerContent = (props: any) => {
             ItemIcon={() => <Icon name="users" />}
             labelStyle={styles.labelStyle}
           />
+           <CustomDrawerItem
+            ItemLabel="Service"
+            ItemStyle={styles.label}
+            ItemEvent={() => CustomNavigation("service")}
+            ItemIcon={() => <Icon name="hard-drive" />}
+            labelStyle={styles.labelStyle}
+          />
           <CustomDrawerItem
             ItemLabel="Report"
             ItemStyle={styles.label}
