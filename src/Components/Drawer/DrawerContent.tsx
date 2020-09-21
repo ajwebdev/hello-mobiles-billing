@@ -34,7 +34,6 @@ const DrawerContent = (props: any) => {
             ItemIcon={() => <Icon name="list" />}
             labelStyle={styles.labelStyle}
           />
-
           <CustomDrawerItem
             ItemLabel="Items"
             ItemStyle={styles.label}
@@ -42,42 +41,6 @@ const DrawerContent = (props: any) => {
             ItemIcon={() => <Icon name="smartphone" />}
             labelStyle={styles.labelStyle}
           />
-          {/* <List.Accordion
-            title="Accessories"
-            style={styles.listAccordion}
-            titleStyle={{ fontWeight: "bold", fontSize: 13, left: 5 }}
-            left={(props) => <List.Icon {...props} icon="view-list" />}
-          >
-            <CustomDrawerItem
-              ItemLabel="View Accessories"
-              ItemStyle={styles.labelInside}
-              ItemEvent={() => CustomNavigation("accessories")}
-            />
-            <CustomDrawerItem
-              ItemLabel="Add Accessories"
-              ItemStyle={styles.labelInside}
-              ItemEvent={() => CustomNavigation("addAccessories")}
-            />
-          </List.Accordion>
-
-          <List.Accordion
-            title="Products"
-            style={styles.listAccordion}
-            titleStyle={{ fontWeight: "bold", fontSize: 13, left: 5 }}
-            left={(props) => <List.Icon {...props} icon="headphones" />}
-          >
-            <CustomDrawerItem
-              ItemLabel="View Items"
-              ItemStyle={styles.labelInside}
-              ItemEvent={() => CustomNavigation("listItem")}
-            />
-            <CustomDrawerItem
-              ItemLabel="Add Items"
-              ItemStyle={styles.labelInside}
-              ItemEvent={() => CustomNavigation("addItem")}
-            />
-          </List.Accordion> */}
-
           <CustomDrawerItem
             ItemLabel="Customers"
             ItemStyle={styles.label}
@@ -88,7 +51,7 @@ const DrawerContent = (props: any) => {
            <CustomDrawerItem
             ItemLabel="Service"
             ItemStyle={styles.label}
-            ItemEvent={() => CustomNavigation("service")}
+            ItemEvent={() => CustomNavigation("listService")}
             ItemIcon={() => <Icon name="hard-drive" />}
             labelStyle={styles.labelStyle}
           />

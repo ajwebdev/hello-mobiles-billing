@@ -10,7 +10,7 @@ import customer from "./Customer/Customer";
 import service from "./Service/Service";
 import report from "./Report/ReportScreen";
 import AppHeader from "../Header/AppHeader";
-
+import ListService from "./Service/ListService";
 const AppStack = createStackNavigator();
 const Screens = ({ navigation }) => {
   const headerOptions = {
@@ -70,8 +70,13 @@ const Screens = ({ navigation }) => {
       />
        <AppStack.Screen
         name="service"
-        options={{ title: "Service" }}
+        options={{ title: "Add Service" }}
         component={service}
+      />
+       <AppStack.Screen
+        name="listService"
+        options={{ title: "Service" }}
+        component={ListService}
       />
     </AppStack.Navigator>
   );
