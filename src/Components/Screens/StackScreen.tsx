@@ -11,7 +11,8 @@ import service from "./Service/Service";
 import report from "./Report/ReportScreen";
 import AppHeader from "../Header/AppHeader";
 import ListService from "./Service/ListService";
-const AppStack = createStackNavigator();
+import customerList from "./Customer/CustomerList";
+ const AppStack = createStackNavigator();
 const Screens = ({ navigation }) => {
   const headerOptions = {
     header: ({ scene, navigation }:any) => {
@@ -68,6 +69,13 @@ const Screens = ({ navigation }) => {
         options={{ title: "Customers" }}
         component={customer}
       />
+
+      <AppStack.Screen
+        name="customerList"
+        options={{ title: "Customer List" }}
+        component={customerList}
+      />
+
        <AppStack.Screen
         name="service"
         options={{ title: "Add Service" }}
