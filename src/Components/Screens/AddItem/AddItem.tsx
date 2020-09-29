@@ -320,6 +320,7 @@ const AddItem = ({ navigation, route }: any) => {
                       mode="contained"
                       style={{ marginTop: 15, backgroundColor: "red" }}
                       onPress={delItem}
+                      
                     >
                       Delete Item
                     </Button>

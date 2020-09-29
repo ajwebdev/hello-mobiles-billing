@@ -14,7 +14,6 @@ import { isEmpty, equals, always, cond, T, sort } from "ramda";
 import CustomFlatList from "../../List/CustomFlatList";
 import EmptyScreen from "../EmptyScreen";
 import Loader from "../../Loader/Loader";
-import groupBy from "lodash.groupby";
 const ListItem = ({ navigation }: any) => {
   const [item, updateItem] = useState();
   const [isLoading, setLoading] = useState(false);
@@ -53,7 +52,7 @@ const ListItem = ({ navigation }: any) => {
           item_data.push(data);
         });
         setLoading(false);
-        const groupedData=groupBy(item_data, 'access_name');
+        
    
         updateItem(item_data);
       });
@@ -75,7 +74,7 @@ const ListItem = ({ navigation }: any) => {
       //   navigation={() => navigation.navigate("addItem", item.id)}
       // />
       <TouchableNativeFeedback onPress={() => navigation.navigate("addItem", item.id)}>
-      <Card>
+      <Card style={styles.cardList}>
         <Card.Content>
           <Title>{title}</Title>
           <Paragraph>{description}</Paragraph>
@@ -119,5 +118,14 @@ const styles = StyleSheet.create({
     bottom:50,
     backgroundColor: "#6200EE",
   },
+  cardList:{flex:1,     flex: 1,  
+    paddingRight: 10,  
+    paddingTop: 10,  
+      
+    borderBottomWidth: 0.5,  
+    borderColor: '#c9c9c9',  
+    flexDirection: 'row',  
+    alignItems: 'center',  
+    }
 });
 export default ListItem;

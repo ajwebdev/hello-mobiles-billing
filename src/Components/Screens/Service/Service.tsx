@@ -6,36 +6,89 @@ import {
   StyleSheet,
   Platform,
 } from "react-native";
-import { Card, TextInput, Button } from "react-native-paper";
+import { Card, TextInput, Button, HelperText } from "react-native-paper";
 import Loader from "../../Loader/Loader";
 import { formatDate, setTime } from "../../../utilities/setTime";
 import { DatePickerAndroid } from "react-native";
 import { db } from "../../firebaseConfig";
 import { isEmpty } from "ramda";
-const AddService = ({ navigation }) => {
+import { ErrorText } from "../../../utilities/validation";
+import Dropdown from "../../DropDown/DropDown";
+const AddService = ({ navigation, route }) => {
   const [isLoading, setLoading] = useState(false);
   const [serviceDate, updateServiceDate] = useState({
     val: formatDate(new Date(), "DD-MM-YYYY"),
     error: false,
   });
   const [customerName, updateCustomerName] = useState({
-    val: "",
+    id: "",
+    name: "",
     error: false,
   });
-  const [serviceDesc, updateServiceDesc] = useState({
-    val: "",
-    error: false,
-  });
+  const [customerDetails, updateCustomerDetails] = useState([{}]);
+  const [serviceDesc, updateServiceDesc] = useState({ val: "", error: false });
   const [serviceCharge, updateServiceCharge] = useState({
     val: "",
     error: false,
   });
-  const [serviceDiscount, updateServiceDiscount] = useState({
-    val: "",
-    error: false,
-  });
-  const id = "";
 
+  useEffect(() => {
+    const subscribe = navigation.addListener("focus", () => {
+    fetchCustomer();
+      if (!id) {
+        setLoading(false);
+      }
+    });
+    if (id) {
+      setLoading(true);
+      fetchSingleDoc();
+    }
+    return subscribe;
+  }, [navigation]);
+
+  const id = route.params;
+  const fetchCustomer = async () => {
+    var customers: any = [];
+    var docRef = db.collection("customers");
+    await docRef
+      .orderBy("itemCreatedAt")
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          const data = { id: doc.id, name: doc.data().customerName };
+          customers.push(data);
+
+        });
+        console.log(customers);
+        updateCustomerDetails(customers);
+      });
+  };
+
+  const fetchSingleDoc = async () => {
+    var docRef = db.collection("service").doc(id);
+    await docRef.get().then((doc) => {
+      if (doc.exists) {
+        const data = doc.data();
+        console.log(data);
+        const customerName = data.customerName;
+        const serviceDesc = data.serviceDesc;
+        const serviceCharge = data.serviceCharge;
+        const serviceDate = data.serviceDate;
+        updateCustomerName({
+          id: id,
+          name: customerName,
+          error: false,
+        });
+
+        updateServiceDesc({ val: serviceDesc, error: false });
+        updateServiceCharge({ val: serviceCharge, error: false });
+        updateServiceDate({ val: serviceDate, error: false });
+      } else {
+        navigation.goBack();
+      }
+    });
+    setLoading(false);
+  };
   const styles = StyleSheet.create({
     input: {
       flexDirection: "column",
@@ -56,7 +109,7 @@ const AddService = ({ navigation }) => {
       );
       if (action !== DatePickerAndroid.dismissedAction) {
         const date = formatDate(new Date(year, month, day), "DD-MM-YYYY");
-        updateStates(date,serviceDate,updateServiceDate,false);
+        updateStates(date, serviceDate, updateServiceDate, false);
       }
     } catch ({ code, message }) {
       console.warn("Cannot open date picker", message);
@@ -66,22 +119,21 @@ const AddService = ({ navigation }) => {
   const addService = async () => {
     setLoading(true);
     await db.collection("service").doc().set({
-      customerName: customerName.val,
+      customerName: customerName.name,
+      customerId: customerName.id,
       serviceDesc: serviceDesc.val,
       serviceDate: serviceDate.val,
       serviceCharge: serviceCharge.val,
-      serviceDiscount: serviceDiscount.val,
       serviceCreatedAt: setTime(),
     });
-    navigation.navigate('listService');
+    navigation.navigate("listService");
     setLoading(false);
   };
-
   const updateStates = (
     changeText: any,
     stateName: any,
     updateFn: any,
-    checkError:boolean
+    checkError: boolean
   ) => {
     const text =
       isEmpty(changeText.trim()) && checkError
@@ -90,6 +142,49 @@ const AddService = ({ navigation }) => {
     updateFn({ ...stateName, ...text });
   };
 
+  const updateService = async () => {
+    setLoading(true);
+    await db
+      .collection("service")
+      .doc(id)
+      .update({
+        customerName: customerName.name,
+        customerId: customerName.id,
+        serviceDesc: serviceDesc.val,
+        serviceCharge: serviceCharge.val,
+        serviceDate: serviceDate.val
+      })
+      .then(() => navigation.navigate("listService"));
+    setLoading(false);
+  };
+  const deleteService=async ()=>{
+    setLoading(true);
+    if (id) {
+      await db.collection("service")
+        .doc(id)
+        .delete()
+        .then( ()=> {
+          navigation.navigate("listService")
+        });
+    }
+    setLoading(false);
+    navigation.navigate("listService")
+  }
+  const renderButton = () => {
+    return (
+      <View>
+        <Button mode="contained" style={{ marginTop: 20 }} onPress={id?updateService:addService}>
+          {id ?"Update Service":"Add Service"}
+        </Button>
+        {id &&
+        <Button mode="contained"                       style={{ marginTop: 15, backgroundColor: "red" }}
+        onPress={deleteService}>
+        Delete Service
+      </Button>
+        }
+      </View>
+    );
+  };
   return (
     <View style={{ flex: 1 }}>
       {isLoading ? (
@@ -102,14 +197,16 @@ const AddService = ({ navigation }) => {
                 <Card.Title title={id ? "Edit Service" : "Add Service"} />
                 <Card.Content>
                   <View style={styles.input}>
-                    <TextInput
-                      mode="outlined"
-                      label="Customer"
-                      value={customerName.val}
+                    <Dropdown
+                      onItemSelect={(text: object) => {
+                        const newText = { ...text, ...{ error: false } };
+                        updateCustomerName({ ...customerName, ...newText });
+                      }}
+                      items={customerDetails}
+                      selectedItems={customerName.name}
+                      placeholder="Customer"
+                      value={customerName.name}
                       error={customerName.error}
-                      onChangeText={(text) =>
-                        updateStates(text, customerName, updateCustomerName, true)
-                      }
                     />
                   </View>
                   <View style={styles.input}>
@@ -131,7 +228,12 @@ const AddService = ({ navigation }) => {
                         onTouchStart={showDate}
                         value={serviceDate.val}
                         onChangeText={(text) =>
-                          updateStates(text, serviceDate, updateServiceDate, false)
+                          updateStates(
+                            text,
+                            serviceDate,
+                            updateServiceDate,
+                            false
+                          )
                         }
                       />
                     </View>
@@ -152,31 +254,7 @@ const AddService = ({ navigation }) => {
                       }
                     />
                   </View>
-                  <View style={styles.input}>
-                    <TextInput
-                      mode="outlined"
-                      label="Discount"
-                      value={serviceDiscount.val}
-                      error={serviceDiscount.error}
-                      onChangeText={(text) =>
-                        updateStates(
-                          text,
-                          serviceDiscount,
-                          updateServiceDiscount,
-                          false
-                        )
-                      }
-                    />
-                  </View>
-                  <View>
-                    <Button
-                      mode="contained"
-                      style={{ marginTop: 20 }}
-                      onPress={addService}
-                    >
-                      Add Service
-                    </Button>
-                  </View>
+                  <View>{renderButton()}</View>
                 </Card.Content>
               </Card>
             </View>

@@ -16,8 +16,6 @@ const AppHeader = (props: any) => {
       <Appbar.Header style={styles.header}>
         {headerButton}
         <Appbar.Content title={props.HeaderTitle} />
-        <Appbar.Action icon="magnify" />
-        <Appbar.Action icon="dots-vertical" />
       </Appbar.Header>
       <StatusBar backgroundColor={primaryColor} />
     </View>
