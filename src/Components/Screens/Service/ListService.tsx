@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TouchableNativeFeedback, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TouchableNativeFeedback,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native";
 import {
   Card,
   TextInput,
@@ -13,17 +19,17 @@ import { db } from "../../firebaseConfig";
 import { equals, always, T, cond } from "ramda";
 import CustomFlatList from "../../List/CustomFlatList";
 import EmptyScreen from "../EmptyScreen";
+import firebase from "firebase";
+import "firebase/firestore";
+
 
 const ListService = ({ navigation }) => {
   const [isLoading, setLoading] = useState(false);
-  const [sort, setSort] = useState({ col: "serviceCreatedAt", dir: "desc" });
-  const [service, updateService] = useState('');
-  const [refresh,updateRefresh]=useState({
-    limit:10,
-    lastVisible: null,
-    listLoading: false,
-    listRefreshing: false,
-  })
+  const [service, updateService] = useState("");
+  const [refreshLoad, setRefreshLoad] = useState(false);
+  const [lastVisible, setLastVisible] = useState({});
+  const [limit, setLimit] = useState(10);
+  let onEndReachedCalledDuringMomentum = false;
   useEffect(() => {
     fetchService();
     const subscribe = navigation.addListener("focus", () => {
@@ -35,34 +41,96 @@ const ListService = ({ navigation }) => {
 
   const fetchService = async () => {
     setLoading(true);
-    updateRefresh({...refresh,...{listLoading:true}})
+
     var service_data: any = [];
-    var  docRef = db.collection("service").orderBy(sort.col, sort.dir).limit(10);;
-    docRef.get().then(function (documentSnapshots) {
+    var docRef = db.collection("service").orderBy("serviceCreatedAt").limit(10);
+    docRef.get().then((documentSnapshots) => {
+      documentSnapshots.forEach((doc) => {
+        const docs = doc.data();
+        const data = {
+          id: doc.id,
+          customerName: docs.customerName,
+          serviceCharge: docs.serviceCharge,
+          serviceDate: docs.serviceDate,
+          serviceDesc: docs.serviceDesc,
+          customerId: docs.customerId,
+        };
+        service_data.push(data);
+        setLoading(false);
+      });
+      updateService(service_data);
       // Get the last visible document
-      var lastVisible = documentSnapshots.docs[documentSnapshots.docs.length-1];
-      console.log("last", lastVisible.data());
-    
-      // Construct a new query starting at this document,
-      // get the next 25 cities.
-      var next = db.collection("service")
-              .startAfter(lastVisible)
-              .limit(10).get().then((documentSnapshots)=>{
-                var lastVisible = documentSnapshots.docs[documentSnapshots.docs.length-1];
-      console.log("last", lastVisible.data());
-              });
- console.log("next.data()")
- 
 
-
-      
-    
-            }
-    
-    );;
-     
-      
+      var cursor = documentSnapshots.docs[documentSnapshots.docs.length - 1].id;
+      if (cursor) {
+        setLastVisible(cursor);
+      } else {
+        setLastVisible("");
+        setRefreshLoad(false);
+      }
+    });
+    setRefreshLoad(false);
   };
+
+  const renderFooter = () => {
+    if (!refreshLoad) return true;
+
+    return (
+      <ActivityIndicator
+        size="large"
+        color={"#D83E64"}
+        style={{ marginBottom: 10 }}
+      />
+    );
+  };
+  const loadMore = async () => {
+    if (lastVisible) {
+   
+      setRefreshLoad(true);
+      var service_data: any = [];
+
+      var next = await db
+        .collection("service")
+        .orderBy(firebase.firestore.FieldPath.documentId())
+        .startAfter(lastVisible)
+        .limit(10)
+        .get()
+        .then((documentSnapshots) => {
+          var cursor =documentSnapshots.docs[documentSnapshots.docs.length - 1].id;
+         if(cursor){
+           setLastVisible(cursor);
+          documentSnapshots.forEach((doc) => {
+            const docs = doc.data();
+            const data = {
+              id: doc.id,
+              customerName: docs.customerName,
+              serviceCharge: docs.serviceCharge,
+              serviceDate: docs.serviceDate,
+              serviceDesc: docs.serviceDesc,
+              customerId: docs.customerId,
+            };
+            service_data.push(data);
+          }
+        );
+        const newService = [...service, ...service_data];
+        updateService(newService);
+
+      }
+      else{
+        setLastVisible('');
+        setRefreshLoad(false);
+
+      }
+
+       
+
+        });
+    }
+    onEndReachedCalledDuringMomentum = true;
+    setRefreshLoad(false);
+  };
+
+
 
   const renderItem = ({ item }) => {
     const title = item.serviceDesc + " " + " (" + item.customerName + ")";
@@ -85,9 +153,9 @@ const ListService = ({ navigation }) => {
       </TouchableNativeFeedback>
     );
   };
-const handleLoadMore=()=>{
-  console.warn('test');
-}
+  const handleLoadMore = () => {
+    console.warn("test");
+  };
   const listService = cond([
     [
       equals([] || undefined),
@@ -100,9 +168,18 @@ const handleLoadMore=()=>{
           data={service}
           renderItem={renderItem}
           keyExtractor={(item: any) => item.id}
-          onEndReached={handleLoadMore}
-          onEndReachedThreshold={0.01}
+          onEndReachedThreshold={0.5}
           initialNumToRender={10}
+          ListFooterComponent={renderFooter}
+          bounces={false}
+          onMomentumScrollBegin={() => {
+            onEndReachedCalledDuringMomentum = false;
+          }}
+          onEndReached={() => {
+            if (!onEndReachedCalledDuringMomentum && !refreshLoad) {
+              loadMore();
+            }
+          }}
         />
       ),
     ],
