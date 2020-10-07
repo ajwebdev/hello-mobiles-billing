@@ -27,9 +27,9 @@ const ListService = ({ navigation }) => {
   const [service, updateService] = useState([]);
   const [isMoreLoading, setisMoreLoading] = useState(false);
   const [lastVisible, setLastVisible] = useState("");
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(25);
   let onEndReachedCalledDuringMomentum = true;
-  const documentId=firebase.firestore.FieldPath.documentId();
+  const documentId = firebase.firestore.FieldPath.documentId();
   useEffect(() => {
     fetchService();
     const subscribe = navigation.addListener("focus", () => {
@@ -41,27 +41,25 @@ const ListService = ({ navigation }) => {
   const fetchService = async () => {
     setLoading(true);
     var service_data: any = [];
-    var docRef =await db.collection("service").orderBy(documentId).limit(10).get();
+    var docRef = await db
+      .collection("service")
+      .orderBy(documentId)
+      .limit(limit)
+      .get();
     if (!docRef.empty) {
-      const cursor=docRef.docs[docRef.docs.length - 1].id;
-      setLastVisible(cursor)
+      const cursor = docRef.docs[docRef.docs.length - 1].id;
+      setLastVisible(cursor);
       for (let i = 0; i < docRef.docs.length; i++) {
-        const data=docRef.docs[i].data();
-        const serviceId={id:docRef.docs[i].id};
-        service_data.push({...data,...serviceId});
+        const data = docRef.docs[i].data();
+        const serviceId = { id: docRef.docs[i].id };
+        service_data.push({ ...data, ...serviceId });
       }
-      console.log("old service");
-      console.log(service_data);
       updateService(service_data);
-  }
-  else{
-    setLastVisible("")
-
-  }
-  setLoading(false);
-
-}
-
+    } else {
+      setLastVisible("");
+    }
+    setLoading(false);
+  };
   const renderFooter = () => {
     if (!isMoreLoading) return true;
     return (
@@ -73,43 +71,37 @@ const ListService = ({ navigation }) => {
     );
   };
   const loadMore = async () => {
-    console.log('loading..'+lastVisible)
     if (lastVisible) {
       setisMoreLoading(true);
-      setTimeout(async() => {  
-      var nextDocRef = await db.collection("service")
-        .orderBy(documentId,)
-        .startAfter(lastVisible)
-        .limit(10)
-        .get()
+      setTimeout(async () => {
+        var nextDocRef = await db
+          .collection("service")
+          .orderBy(documentId)
+          .startAfter(lastVisible)
+          .limit(limit)
+          .get();
         if (!nextDocRef.empty) {
           let newService = service;
           setLastVisible(nextDocRef.docs[nextDocRef.docs.length - 1].id);
-          console.log('lastVisible..'+nextDocRef.docs[nextDocRef.docs.length - 1].id)
-  
-          for(let i = 0; i < nextDocRef.docs.length; i++) {
-            const data=nextDocRef.docs[i].data();
-            const serviceId={id:nextDocRef.docs[i].id};
-            newService.push({...data,...serviceId});
-            
-          }
-          console.log("newService");
 
-          console.log(newService);
+          for (let i = 0; i < nextDocRef.docs.length; i++) {
+            const data = nextDocRef.docs[i].data();
+            const serviceId = { id: nextDocRef.docs[i].id };
+            newService.push({ ...data, ...serviceId });
+          }
+
           updateService(newService);
-          console.log(" .docs.length");
-          console.log(nextDocRef.docs.length);
-          if (nextDocRef.docs.length < 10) setLastVisible("");
+
+          if (nextDocRef.docs.length < limit) setLastVisible("");
         } else {
           setLastVisible("");
         }
-  
+
         setisMoreLoading(false);
-    
-  },1000)
-}
-onEndReachedCalledDuringMomentum = true;
-  }
+      }, 1000);
+    }
+    onEndReachedCalledDuringMomentum = true;
+  };
 
   const renderItem = ({ item }) => {
     const title = item.serviceDesc + " " + " (" + item.customerName + ")";
@@ -149,12 +141,13 @@ onEndReachedCalledDuringMomentum = true;
           initialNumToRender={10}
           ListFooterComponent={renderFooter}
           bounces={false}
-        
-          onMomentumScrollBegin={() => {onEndReachedCalledDuringMomentum = false; }}
+          onMomentumScrollBegin={() => {
+            onEndReachedCalledDuringMomentum = false;
+          }}
           onEndReached={() => {
             if (!onEndReachedCalledDuringMomentum && !isMoreLoading) {
               loadMore();
-              onEndReachedCalledDuringMomentum=true;
+              onEndReachedCalledDuringMomentum = true;
             }
           }}
         />
@@ -193,4 +186,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ListService
+export default ListService;
