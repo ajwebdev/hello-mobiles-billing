@@ -22,59 +22,48 @@ import EmptyScreen from "../EmptyScreen";
 import firebase from "firebase";
 import "firebase/firestore";
 
-
 const ListService = ({ navigation }) => {
   const [isLoading, setLoading] = useState(false);
-  const [service, updateService] = useState("");
-  const [refreshLoad, setRefreshLoad] = useState(false);
-  const [lastVisible, setLastVisible] = useState({});
+  const [service, updateService] = useState([]);
+  const [isMoreLoading, setisMoreLoading] = useState(false);
+  const [lastVisible, setLastVisible] = useState("");
   const [limit, setLimit] = useState(10);
-  let onEndReachedCalledDuringMomentum = false;
+  let onEndReachedCalledDuringMomentum = true;
+  const documentId=firebase.firestore.FieldPath.documentId();
   useEffect(() => {
     fetchService();
     const subscribe = navigation.addListener("focus", () => {
       fetchService();
     });
-
     return subscribe;
   }, [navigation]);
 
   const fetchService = async () => {
     setLoading(true);
-
     var service_data: any = [];
-    var docRef = db.collection("service").orderBy("serviceCreatedAt").limit(10);
-    docRef.get().then((documentSnapshots) => {
-      documentSnapshots.forEach((doc) => {
-        const docs = doc.data();
-        const data = {
-          id: doc.id,
-          customerName: docs.customerName,
-          serviceCharge: docs.serviceCharge,
-          serviceDate: docs.serviceDate,
-          serviceDesc: docs.serviceDesc,
-          customerId: docs.customerId,
-        };
-        service_data.push(data);
-        setLoading(false);
-      });
-      updateService(service_data);
-      // Get the last visible document
-
-      var cursor = documentSnapshots.docs[documentSnapshots.docs.length - 1].id;
-      if (cursor) {
-        setLastVisible(cursor);
-      } else {
-        setLastVisible("");
-        setRefreshLoad(false);
+    var docRef =await db.collection("service").orderBy(documentId).limit(10).get();
+    if (!docRef.empty) {
+      const cursor=docRef.docs[docRef.docs.length - 1].id;
+      setLastVisible(cursor)
+      for (let i = 0; i < docRef.docs.length; i++) {
+        const data=docRef.docs[i].data();
+        const serviceId={id:docRef.docs[i].id};
+        service_data.push({...data,...serviceId});
       }
-    });
-    setRefreshLoad(false);
-  };
+      console.log("old service");
+      console.log(service_data);
+      updateService(service_data);
+  }
+  else{
+    setLastVisible("")
+
+  }
+  setLoading(false);
+
+}
 
   const renderFooter = () => {
-    if (!refreshLoad) return true;
-
+    if (!isMoreLoading) return true;
     return (
       <ActivityIndicator
         size="large"
@@ -84,53 +73,43 @@ const ListService = ({ navigation }) => {
     );
   };
   const loadMore = async () => {
+    console.log('loading..'+lastVisible)
     if (lastVisible) {
-   
-      setRefreshLoad(true);
-      var service_data: any = [];
-
-      var next = await db
-        .collection("service")
-        .orderBy(firebase.firestore.FieldPath.documentId())
+      setisMoreLoading(true);
+      setTimeout(async() => {  
+      var nextDocRef = await db.collection("service")
+        .orderBy(documentId,)
         .startAfter(lastVisible)
         .limit(10)
         .get()
-        .then((documentSnapshots) => {
-          var cursor =documentSnapshots.docs[documentSnapshots.docs.length - 1].id;
-         if(cursor){
-           setLastVisible(cursor);
-          documentSnapshots.forEach((doc) => {
-            const docs = doc.data();
-            const data = {
-              id: doc.id,
-              customerName: docs.customerName,
-              serviceCharge: docs.serviceCharge,
-              serviceDate: docs.serviceDate,
-              serviceDesc: docs.serviceDesc,
-              customerId: docs.customerId,
-            };
-            service_data.push(data);
+        if (!nextDocRef.empty) {
+          let newService = service;
+          setLastVisible(nextDocRef.docs[nextDocRef.docs.length - 1].id);
+          console.log('lastVisible..'+nextDocRef.docs[nextDocRef.docs.length - 1].id)
+  
+          for(let i = 0; i < nextDocRef.docs.length; i++) {
+            const data=nextDocRef.docs[i].data();
+            const serviceId={id:nextDocRef.docs[i].id};
+            newService.push({...data,...serviceId});
+            
           }
-        );
-        const newService = [...service, ...service_data];
-        updateService(newService);
+          console.log("newService");
 
-      }
-      else{
-        setLastVisible('');
-        setRefreshLoad(false);
-
-      }
-
-       
-
-        });
-    }
-    onEndReachedCalledDuringMomentum = true;
-    setRefreshLoad(false);
-  };
-
-
+          console.log(newService);
+          updateService(newService);
+          console.log(" .docs.length");
+          console.log(nextDocRef.docs.length);
+          if (nextDocRef.docs.length < 10) setLastVisible("");
+        } else {
+          setLastVisible("");
+        }
+  
+        setisMoreLoading(false);
+    
+  },1000)
+}
+onEndReachedCalledDuringMomentum = true;
+  }
 
   const renderItem = ({ item }) => {
     const title = item.serviceDesc + " " + " (" + item.customerName + ")";
@@ -153,9 +132,7 @@ const ListService = ({ navigation }) => {
       </TouchableNativeFeedback>
     );
   };
-  const handleLoadMore = () => {
-    console.warn("test");
-  };
+
   const listService = cond([
     [
       equals([] || undefined),
@@ -172,12 +149,12 @@ const ListService = ({ navigation }) => {
           initialNumToRender={10}
           ListFooterComponent={renderFooter}
           bounces={false}
-          onMomentumScrollBegin={() => {
-            onEndReachedCalledDuringMomentum = false;
-          }}
+        
+          onMomentumScrollBegin={() => {onEndReachedCalledDuringMomentum = false; }}
           onEndReached={() => {
-            if (!onEndReachedCalledDuringMomentum && !refreshLoad) {
+            if (!onEndReachedCalledDuringMomentum && !isMoreLoading) {
               loadMore();
+              onEndReachedCalledDuringMomentum=true;
             }
           }}
         />
@@ -216,4 +193,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ListService;
+export default ListService
