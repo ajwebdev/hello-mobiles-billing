@@ -4,7 +4,7 @@ import {
   Text,
   TouchableNativeFeedback,
   StyleSheet,
-  ActivityIndicator,
+  ActivityIndicator,Animated, ScrollView
 } from "react-native";
 import {
   Card,
@@ -12,7 +12,7 @@ import {
   Button,
   FAB,
   Paragraph,
-  Title,
+  Title,Searchbar
 } from "react-native-paper";
 import Loader from "../../Loader/Loader";
 import { db } from "../../firebaseConfig";
@@ -24,10 +24,13 @@ import "firebase/firestore";
 
 const ListService = ({ navigation }) => {
   const [isLoading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
   const [service, updateService] = useState([]);
   const [isMoreLoading, setisMoreLoading] = useState(false);
   const [lastVisible, setLastVisible] = useState("");
-  const [limit, setLimit] = useState(25);
+  const [limit, setLimit] = useState(10);
+  
   let onEndReachedCalledDuringMomentum = true;
   const documentId = firebase.firestore.FieldPath.documentId();
   useEffect(() => {
@@ -53,13 +56,16 @@ const ListService = ({ navigation }) => {
         const data = docRef.docs[i].data();
         const serviceId = { id: docRef.docs[i].id };
         service_data.push({ ...data, ...serviceId });
+        
       }
+    
       updateService(service_data);
     } else {
       setLastVisible("");
     }
     setLoading(false);
   };
+
   const renderFooter = () => {
     if (!isMoreLoading) return true;
     return (
@@ -69,7 +75,31 @@ const ListService = ({ navigation }) => {
         style={{ marginBottom: 10 }}
       />
     );
-  };
+  }
+const renderHeader = () => (
+  <View
+    style={{
+      backgroundColor: '#fff',
+      padding:10,
+      alignItems: 'center',
+      justifyContent: 'center'
+    }}>
+    <Searchbar
+      autoCapitalize='none'
+      autoCorrect={false}
+      onChangeText={searchService}
+     
+      placeholder='Search'
+      style={{
+        borderRadius: 25,
+        borderColor: '#333',
+        backgroundColor: '#fff'
+      }}
+      value={searchQuery}
+      
+    />
+  </View>
+)
   const loadMore = async () => {
     if (lastVisible) {
       setisMoreLoading(true);
@@ -102,7 +132,18 @@ const ListService = ({ navigation }) => {
     }
     onEndReachedCalledDuringMomentum = true;
   };
-
+  const renderSeparator = () => {
+    return (
+      <View
+        style={{
+          height: 1,
+          width: '86%',
+          backgroundColor: '#CED0CE',
+          marginLeft: '5%'
+        }}
+      />
+    )
+  }
   const renderItem = ({ item }) => {
     const title = item.serviceDesc + " " + " (" + item.customerName + ")";
     const description =
@@ -124,23 +165,50 @@ const ListService = ({ navigation }) => {
       </TouchableNativeFeedback>
     );
   };
-
+const searchService=async (text:string)=>{
+  setSearchQuery(text);
+  const searchText=text.trim().toLowerCase();
+  if (searchText.length>= 2){
+    const searchedData=[];
+    let docRef=await db.collection("service").orderBy('customerName').startAt(text).endAt(text+"\uf8ff").get();
+    console.log(docRef.empty);
+    if(docRef.empty){
+      docRef= await db.collection("service").orderBy('serviceDesc').startAt(text).endAt(text+"\uf8ff").get();
+    }
+    for (let i = 0; i < docRef.docs.length; i++) {
+      const data =  docRef.docs[i].data();
+      const serviceId = { id: docRef.docs[i].id };
+      searchedData.push({ ...data, ...serviceId });
+    }
+    updateService(searchedData);
+    console.log(searchedData); 
+  }
+  else if(text.length!=1  ){
+    fetchService();
+  }
+}
+const renderEmpty=(text:string)=>{
+return <EmptyScreen Text={text} />
+}
   const listService = cond([
     [
       equals([] || undefined),
-      always(<EmptyScreen Text="Please Add Service" />),
+      always(<EmptyScreen Text="No data found" />),
     ],
     [
       T,
       always(
+      
         <CustomFlatList
           data={service}
           renderItem={renderItem}
           keyExtractor={(item: any) => item.id}
-          onEndReachedThreshold={0.5}
-          initialNumToRender={10}
+          onEndReachedThreshold={0.10}
+          initialNumToRender={limit}
+          ListEmptyComponent={renderEmpty}
           ListFooterComponent={renderFooter}
           bounces={false}
+          ItemSeparatorComponent={renderSeparator}
           onMomentumScrollBegin={() => {
             onEndReachedCalledDuringMomentum = false;
           }}
@@ -151,13 +219,15 @@ const ListService = ({ navigation }) => {
             }
           }}
         />
+        
       ),
     ],
   ]);
   return (
     <View style={{ flex: 1 }}>
-      {isLoading ? <Loader isLoading={isLoading} /> : listService(service)}
-
+          {renderHeader()}
+      {isLoading ? <Loader isLoading={isLoading} /> :listService(service)}
+     
       <FAB
         icon="plus"
         style={styles.fab}

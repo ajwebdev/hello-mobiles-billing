@@ -34,7 +34,7 @@ const AddService = ({ navigation, route }) => {
 
   useEffect(() => {
     const subscribe = navigation.addListener("focus", () => {
-    fetchCustomer();
+      fetchCustomer();
       if (!id) {
         setLoading(false);
       }
@@ -57,9 +57,8 @@ const AddService = ({ navigation, route }) => {
         querySnapshot.forEach((doc) => {
           const data = { id: doc.id, name: doc.data().customerName };
           customers.push(data);
-
         });
-        console.log(customers);
+
         updateCustomerDetails(customers);
       });
   };
@@ -69,7 +68,7 @@ const AddService = ({ navigation, route }) => {
     await docRef.get().then((doc) => {
       if (doc.exists) {
         const data = doc.data();
-        console.log(data);
+
         const customerName = data.customerName;
         const serviceDesc = data.serviceDesc;
         const serviceCharge = data.serviceCharge;
@@ -152,36 +151,44 @@ const AddService = ({ navigation, route }) => {
         customerId: customerName.id,
         serviceDesc: serviceDesc.val,
         serviceCharge: serviceCharge.val,
-        serviceDate: serviceDate.val
+        serviceDate: serviceDate.val,
       })
       .then(() => navigation.navigate("listService"));
     setLoading(false);
   };
-  const deleteService=async ()=>{
+  const deleteService = async () => {
     setLoading(true);
     if (id) {
-      await db.collection("service")
+      await db
+        .collection("service")
         .doc(id)
         .delete()
-        .then( ()=> {
-          navigation.navigate("listService")
+        .then(() => {
+          navigation.navigate("listService");
         });
     }
     setLoading(false);
-    navigation.navigate("listService")
-  }
+    navigation.navigate("listService");
+  };
   const renderButton = () => {
     return (
       <View>
-        <Button mode="contained" style={{ marginTop: 20 }} onPress={id?updateService:addService}>
-          {id ?"Update Service":"Add Service"}
+        <Button
+          mode="contained"
+          style={{ marginTop: 20 }}
+          onPress={id ? updateService : addService}
+        >
+          {id ? "Update Service" : "Add Service"}
         </Button>
-        {id &&
-        <Button mode="contained"                       style={{ marginTop: 15, backgroundColor: "red" }}
-        onPress={deleteService}>
-        Delete Service
-      </Button>
-        }
+        {id && (
+          <Button
+            mode="contained"
+            style={{ marginTop: 15, backgroundColor: "red" }}
+            onPress={deleteService}
+          >
+            Delete Service
+          </Button>
+        )}
       </View>
     );
   };
@@ -200,7 +207,10 @@ const AddService = ({ navigation, route }) => {
                     <Dropdown
                       onItemSelect={(text: object) => {
                         const newText = { ...text, ...{ error: false } };
-                        updateCustomerName({ ...customerName, ...newText });
+                        updateCustomerName({
+                          ...customerName.toLowerCase(),
+                          ...newText,
+                        });
                       }}
                       items={customerDetails}
                       selectedItems={customerName.name}
@@ -216,7 +226,12 @@ const AddService = ({ navigation, route }) => {
                       value={serviceDesc.val}
                       error={serviceDesc.error}
                       onChangeText={(text) =>
-                        updateStates(text, serviceDesc, updateServiceDesc, true)
+                        updateStates(
+                          text.toLowerCase(),
+                          serviceDesc,
+                          updateServiceDesc,
+                          true
+                        )
                       }
                     />
                   </View>
@@ -229,7 +244,7 @@ const AddService = ({ navigation, route }) => {
                         value={serviceDate.val}
                         onChangeText={(text) =>
                           updateStates(
-                            text,
+                            text.toLowerCase(),
                             serviceDate,
                             updateServiceDate,
                             false
@@ -246,7 +261,7 @@ const AddService = ({ navigation, route }) => {
                       error={serviceCharge.error}
                       onChangeText={(text) =>
                         updateStates(
-                          text,
+                          text.toLowerCase(),
                           serviceCharge,
                           updateServiceCharge,
                           true
